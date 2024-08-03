@@ -24,12 +24,21 @@
   2. Wireshark는 일반적으로 네트워크 인터페이스 레벨에서 패킷을 캡처합니다. 이는 운영 체제의 네트워크 스택에서 패킷이 생성된 직후, 방화벽 처리 이전 단계일 수 있습니다.
   3. DNS를 TCP를 사용한 HTTPS나 HTTP프로토콜 등을 사용하는 요청은 브라우저가 요청하는 것이다.
   4. 크롬 브라우저 안에는 HOST Resolver란 것이 있으며, 어떠한 일들을 하는지 명확하게 설명해놓은 문서는 없지만, DNS를 캐시해놓으며 DOH(DNS over HTTPS)같은 프로토콜을 통해 DNS를 안정적으로 가져오는 역할을 하는것으로 추정된다.
-     [출처](https://blog.chromium.org/2020/05/a-safer-and-more-private-browsing-DoH.html)
+    <br>[추정 근거 출처](https://blog.chromium.org/2020/05/a-safer-and-more-private-browsing-DoH.html)
 <hr/>
 
  ### 2. 두번째 아이디어
 > DNS 응답을 추출한 후 UDP DNS Response 응답을 만들어 DNS 서버보다 빨리 보내어 원하는 ip주소로 리다이렉트 시키자
 + 의도: 기본적으로 DNS 캐시를 chrome://net-internals/#dns에서 dns캐시를 비우고 ipconfig/flushdns 명령어로 로컬의 캐시를 지워놓으면 DNS 질의 응답을 UDP로 가져온다. 따라서, UDP DNS Response 패킷을 먼저 보내어 DNS 응답을 조작해 특정ip로 리다이렉트 시키게끔 한다
-+ 
++ 직면했던 문제들
+  1. 비슷한 DNS Response 메시지를 먼저 발행했음에도, 후속 메시지만 인식하는 문제
+  2. nslookup과 같은 window의 기본 dns lookup 명령어도 같은 현상이 발생함
+ 
++ 원인(아직 정확한 원인 파악은 되지 않았으며 추정)
+  1. dig +dnssec 검증, delv 검증 시 통과를 못함(dnssec 필드도 고려해서 짜야하나..?)
+  2. Windwos DNS Resolver(nslookup)으로 dns 조회 명령 시 A레코드 및 AAAA레코드를 같이 조회하는 걸 발견
+
++ 결론
+  + 생각보다 나는 더 무지하다.. 윈도우와 브라우저는 생각보다 더 클라이언트의 보안을 Host Resolver를 단순히 캐싱만을 위한 게 아니었고 여러 공격들을 어렵게 하기 위해 노력하고 있다..
  <br>
 [프로젝트 아이디어 출처 - 널널한 개발자님의 이해하면 인생이 바뀌는 프로그래밍](https://www.inflearn.com/course/%EC%9D%B4%ED%95%B4%ED%95%98%EB%A9%B4-%EC%9D%B8%EC%83%9D%EC%9D%B4-%EB%B0%94%EB%80%8C%EB%8A%94-%EB%84%A4%ED%8A%B8%EC%9B%8C%ED%81%AC-%ED%94%84%EB%A1%9C%EA%B7%B8%EB%9E%98%EB%B0%8D)
