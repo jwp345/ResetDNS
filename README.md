@@ -45,6 +45,8 @@
 
 + 추후 방향
   + 비슷한 시도를 한 사례들을 찾을 수 있었는데, Stack Overflow나 Superuser 같은 커뮤니티의 답변을 보면, 이러한 접근 방식은 기본적으로 검증이 어렵다고 합니다. 특히 DNSSEC 필드와 관련이 있을 것으로 추정되지만, 브라우저가 요청하는 일부 사이트는 A 레코드만으로도 충분하기 때문에 다른 방법도 고려해볼 필요가 있습니다.
+  + [chrome의 기반이 된 오픈소스 chromium의 DNSResponse의 검증을 담당하는 코드](https://github.com/chromium/chromium/blob/6235579d122fd5338e83df2696aed0279718280a/net/dns/dns_response.cc#L414)
+    + [RFC 1035](https://datatracker.ietf.org/doc/html/rfc1035) 여기 제약을 구현한 것으로 보이는데.. ipv4 identification 관련 내용은 찾지 못하였다..
 + 결론
   + 제가 생각보다 더 모르는 부분이 많다는 것을 깨달았습니다. Windows와 브라우저의 Host(DNS) Resolver는 단순한 캐시 이상의 역할을 하며, 여러 공격을 어렵게 하기 위해 고안된 것 같습니다. 시간이 날 때 DNS 처리나 UDP 관련 새로운 정보를 접하게 되면 다시 도전해볼 예정입니다.
  <br>
