@@ -43,10 +43,16 @@
  <br>![dig + delv 결과](https://github.com/user-attachments/assets/e5b67595-88b7-41b4-bbb2-c97ec6bee72d) 
   3. dig +dnssec 검증 및 delv 검증 시 통과하지 못했습니다(DNSSEC 필드도 고려해야 할지 고민 중)
 
++ 최종 추측<br>
+   ![dns transaction error](https://github.com/user-attachments/assets/cba4fa7d-0cfa-463e-848c-471727e9bc51)
+  + 위 에러 코드를 기반으로 chrome의 전신이 된 chromium에서 해당 에러 부분을 찾아봄
+   ![에러 로그 기반 추측](https://github.com/user-attachments/assets/57429ab3-4295-4cb4-adcd-421f9aeb5363)
+  + 위 보이는 것처럼 callback_.is_null()에서 걸리는 것으로 보입니다. 이 코드가 무엇을 의미하는 지 찾아봐야 할 것 같습니다..
+  + [Dns Transaction 관련 코드 출처](https://github.com/chromium/chromium/blob/d29f8d14c8c7d980acdd8a05883afc3caf53e578/net/dns/dns_transaction.cc#L1268)
 + 추후 방향
   + 비슷한 시도를 한 사례들을 찾을 수 있었는데, Stack Overflow나 Superuser 같은 커뮤니티의 답변을 보면, 이러한 접근 방식은 기본적으로 검증이 어렵다고 합니다. 특히 DNSSEC 필드와 관련이 있을 것으로 추정되지만, 브라우저가 요청하는 일부 사이트는 A 레코드만으로도 충분하기 때문에 다른 방법도 고려해볼 필요가 있습니다.
   + [chrome의 기반이 된 오픈소스 chromium의 DNSResponse의 검증을 담당하는 코드](https://github.com/chromium/chromium/blob/6235579d122fd5338e83df2696aed0279718280a/net/dns/dns_response.cc#L414)
-    + [RFC 1035](https://datatracker.ietf.org/doc/html/rfc1035) 여기 제약을 구현한 것으로 보이는데.. ipv4 identification 관련 내용은 찾지 못하였다..
+    + [RFC 1035](https://datatracker.ietf.org/doc/html/rfc1035) 여기 제약을 구현한 것으로 보이는데.. ipv4 identification 관련 내용은 찾지 못함
 + 결론
   + 제가 생각보다 더 모르는 부분이 많다는 것을 깨달았습니다. Windows와 브라우저의 Host(DNS) Resolver는 단순한 캐시 이상의 역할을 하며, 여러 공격을 어렵게 하기 위해 고안된 것 같습니다. 시간이 날 때 DNS 처리나 UDP 관련 새로운 정보를 접하게 되면 다시 도전해볼 예정입니다.
  <br>
